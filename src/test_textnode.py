@@ -12,5 +12,10 @@ class TestTextNode(unittest.TestCase):
         node2 = TextNode("This is Link", TextType.Link)
         self.assertNotEqual(node1, node2)
 
+    def test_inEqEdgeCase(self):
+        node1 = TextNode("This is plain text", TextType.PlainText, "Dummy Link")
+        node2 = TextNode("This is plain text", TextType.PlainText)
+        self.assertNotEqual(node1, node2)
+
 if __name__ == "__main__":
     unittest.main()
