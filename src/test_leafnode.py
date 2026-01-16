@@ -13,5 +13,11 @@ class TestLeafNode(unittest.TestCase):
 
         self.assertEqual(generatedHtmlStr, resultStr)
 
+    def test_leafNode_tag_is_none(self):
+        generatedHtmlStr = LeafNode(None, "This Text Should be rendered raw.").to_html()
+        resultStr = "This Text Should be rendered raw."
+
+        self.assertEqual(generatedHtmlStr, resultStr)
+
 if __name__ == "__main__":
     unittest.main()

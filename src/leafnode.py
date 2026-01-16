@@ -14,7 +14,7 @@ class LeafNode(HTMLNode):
 
         if self.tag is None or len(self.tag) == 0:
             # return raw string
-            return value
+            return self.value
         
         #enclose value in opening the closing tags
         propsStr = self.props_to_html()
