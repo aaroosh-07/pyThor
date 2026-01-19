@@ -40,7 +40,7 @@ def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: TextType):
             raise Exception("Markdown Syntax error: Delimiter not present in pairs")
 
         #Find all occurences of delimiter
-        matches = list(re.finditer(delimiter, textToSplit))
+        matches = list(re.finditer(re.escape(delimiter), textToSplit))
 
         index = 0
         startIndex = 0
@@ -61,7 +61,6 @@ def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: TextType):
         
         # covers up a case where a plain text block is present in the end
         if (startIndex < len(textToSplit)):
-            print(textToSplit[startIndex: len(textToSplit)])
             new_nodes.append(TextNode(textToSplit[startIndex: len(textToSplit)], TextType.PlainText))
 
     return new_nodes

@@ -33,5 +33,17 @@ class TestUtils(unittest.TestCase):
 
         self.assertEqual(new_nodes2, expected_result2)
 
+        node3 = TextNode("This is text with a _italic text_ in the middle", TextType.PlainText)
+
+        new_nodes3 = split_nodes_delimiter([node3], "_", TextType.ItalicText)
+
+        expected_result3 = [
+                                TextNode("This is text with a ", TextType.PlainText),
+                                TextNode("italic text", TextType.ItalicText),
+                                TextNode(" in the middle", TextType.PlainText),
+                            ]
+
+        self.assertEqual(new_nodes3, expected_result3)
+
 if __name__ == "__main__":
     unittest.main()
