@@ -1,11 +1,11 @@
 from enum import Enum, auto
 
 class TextType(Enum):
-    PlainText: str = "Plain Text"
+    TEXT: str = "Plain Text"
     BoldText: str = "Bold Text"
     ItalicText: str = "Italic Text"
     Code: str = "Code"
-    Link: str = "Link"
+    LINK: str = "Link"
     Images: str = "Images"
 
 class TextNode():
