@@ -6,19 +6,19 @@ import re
 
 def text_node_to_html_node(text_node: TextNode):
     match text_node.text_type:
-        case TextType.PlainText:
+        case TextType.TEXT:
             return LeafNode(None, text_node.text)
-        case TextType.BoldText:
+        case TextType.BOLD:
             return LeafNode("b", text_node.text)
-        case TextType.ItalicText:
+        case TextType.ITALIC:
             return LeafNode("i", text_node.text)
-        case TextType.Code:
+        case TextType.CODE:
             return LeafNode("code", text_node.text)
-        case TextType.Link:
+        case TextType.LINK:
             props = dict()
             props["href"] = text_node.link
             return LeafNode("a", text_node.text, props)
-        case TextType.Images:
+        case TextType.IMAGE:
             props = dict()
             props["src"] = text_node.link
             props["alt"] = text_node.text
@@ -31,7 +31,7 @@ def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: TextType):
     new_nodes = list()
 
     for old_node in old_nodes:
-        if old_node.text_type != TextType.PlainText:
+        if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
             continue
         
@@ -51,7 +51,7 @@ def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: TextType):
             textSliced = textToSplit[startIndex: curMatch.start()]
 
             if isPlainText:
-                new_nodes.append(TextNode(textSliced, TextType.PlainText))
+                new_nodes.append(TextNode(textSliced, TextType.TEXT))
             else:
                 new_nodes.append(TextNode(textSliced, text_type))
 
@@ -61,6 +61,98 @@ def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: TextType):
         
         # covers up a case where a plain text block is present in the end
         if (startIndex < len(textToSplit)):
-            new_nodes.append(TextNode(textToSplit[startIndex: len(textToSplit)], TextType.PlainText))
+            new_nodes.append(TextNode(textToSplit[startIndex: len(textToSplit)], TextType.TEXT))
+
+    return new_nodes
+
+
+def extract_markdown_images(text: str) -> list[tuple[str, str]] :
+    matches = re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+
+    return matches
+
+def extract_markdown_links(text: str) -> list[tuple[str, str]] :
+    matches = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+
+    return matches
+
+def split_nodes_image(old_nodes: list) -> list:
+    # Split text according to regex expresssion
+    # if block of text starts with ! then its a image in markdown
+    # or use extract markdown images function call
+
+    new_nodes = []
+
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        
+        textSections = re.split(r"(!\[[^\[\]]*\]\([^\(\)]*\))", old_node.text)
+
+        for section in textSections:
+            # if a image then extract tuple
+            extractedImageMarkdown = extract_markdown_images(section)
+
+            if len(extractedImageMarkdown) == 0:
+                # it is a TEXT type Node
+                if len(section) == 0:
+                    # if text is empty then move to next section
+                    continue
+                new_nodes.append(TextNode(section, TextType.TEXT))
+            else:
+                # it is a Image Node
+                alt_text = extractedImageMarkdown[0][0]
+                img_link = extractedImageMarkdown[0][1]
+                new_nodes.append(TextNode(alt_text, TextType.IMAGE, img_link))
+
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        
+        textSections = re.split(r"((?<!!)\[[^\[\]]*\]\([^\(\)]*\))", old_node.text)
+
+        for sections in textSections:
+            extractedLinkMarkdown = extract_markdown_links(sections)
+
+            if len(extractedLinkMarkdown) == 0:
+                # it is plain text node
+
+                if len(sections) == 0:
+                    continue
+                
+                new_nodes.append(TextNode(sections, TextType.TEXT))
+
+            else:
+                text = extractedLinkMarkdown[0][0]
+                link = extractedLinkMarkdown[0][1]
+
+                new_nodes.append(TextNode(text, TextType.LINK, link))
+    
+    return new_nodes
+
+
+def text_to_textnodes(text: str) -> list:
+    # take text and split it down into different TextType nodes
+
+    node = TextNode(text, TextType.TEXT)
+
+    #first check for italic, Code and bold
+    new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+
+    new_nodes = split_nodes_delimiter(new_nodes, "**", TextType.BOLD)
+
+    new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+    #then check for images
+    new_nodes = split_nodes_image(new_nodes)
+
+    #then for Links
+    new_nodes = split_nodes_link(new_nodes)
 
     return new_nodes
