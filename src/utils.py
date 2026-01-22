@@ -75,3 +75,31 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]] :
     matches = re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
 
     return matches
+
+def split_nodes_image(old_nodes: list) -> list:
+    # Split text according to regex expresssion
+    # if block of text starts with ! then its a image in markdown
+    # or use extract markdown images function call
+
+    new_nodes = []
+    for old_node in old_nodes:
+        textSections = re.split(r"(!\[[^\[\]]*\]\([^\(\)]*\))", old_node.text)
+
+        for section in textSections:
+            # if a image then extract tuple
+            extractedImageMarkdown = extract_markdown_images(section)
+
+            if len(extractedImageMarkdown) == 0:
+                # it is a TEXT type Node
+                if len(section) == 0:
+                    # if text is empty then move to next section
+                    continue
+                new_nodes.append(TextNode(section, TextType.PlainText))
+            else:
+                # it is a Image Node
+                alt_text = extractedImageMarkdown[0][0]
+                img_link = extractedImageMarkdown[0][1]
+                new_nodes.append(TextNode(alt_text, TextType.Images, img_link))
+
+    return new_nodes
+
