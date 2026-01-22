@@ -8,17 +8,17 @@ def text_node_to_html_node(text_node: TextNode):
     match text_node.text_type:
         case TextType.TEXT:
             return LeafNode(None, text_node.text)
-        case TextType.BoldText:
+        case TextType.BOLD:
             return LeafNode("b", text_node.text)
-        case TextType.ItalicText:
+        case TextType.ITALIC:
             return LeafNode("i", text_node.text)
-        case TextType.Code:
+        case TextType.CODE:
             return LeafNode("code", text_node.text)
         case TextType.LINK:
             props = dict()
             props["href"] = text_node.link
             return LeafNode("a", text_node.text, props)
-        case TextType.Images:
+        case TextType.IMAGE:
             props = dict()
             props["src"] = text_node.link
             props["alt"] = text_node.text
@@ -99,7 +99,7 @@ def split_nodes_image(old_nodes: list) -> list:
                 # it is a Image Node
                 alt_text = extractedImageMarkdown[0][0]
                 img_link = extractedImageMarkdown[0][1]
-                new_nodes.append(TextNode(alt_text, TextType.Images, img_link))
+                new_nodes.append(TextNode(alt_text, TextType.IMAGE, img_link))
 
     return new_nodes
 

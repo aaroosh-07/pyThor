@@ -11,11 +11,11 @@ class TestUtils(unittest.TestCase):
 
     def test_spliting_text_nodes(self):
         node = TextNode("This is text with a `code block` word", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "`", TextType.Code)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
 
         expected_result = [
             TextNode("This is text with a ", TextType.TEXT),
-            TextNode("code block", TextType.Code),
+            TextNode("code block", TextType.CODE),
             TextNode(" word", TextType.TEXT),
         ]
 
@@ -23,11 +23,11 @@ class TestUtils(unittest.TestCase):
 
         node2 = TextNode("This is text with a **bolded phrase** in the middle", TextType.TEXT)
 
-        new_nodes2 = split_nodes_delimiter([node2], "**", TextType.BoldText)
+        new_nodes2 = split_nodes_delimiter([node2], "**", TextType.BOLD)
 
         expected_result2 = [
             TextNode("This is text with a ", TextType.TEXT),
-            TextNode("bolded phrase", TextType.BoldText),
+            TextNode("bolded phrase", TextType.BOLD),
             TextNode(" in the middle", TextType.TEXT),
         ]
 
@@ -35,11 +35,11 @@ class TestUtils(unittest.TestCase):
 
         node3 = TextNode("This is text with a _italic text_ in the middle", TextType.TEXT)
 
-        new_nodes3 = split_nodes_delimiter([node3], "_", TextType.ItalicText)
+        new_nodes3 = split_nodes_delimiter([node3], "_", TextType.ITALIC)
 
         expected_result3 = [
             TextNode("This is text with a ", TextType.TEXT),
-            TextNode("italic text", TextType.ItalicText),
+            TextNode("italic text", TextType.ITALIC),
             TextNode(" in the middle", TextType.TEXT),
         ]
 
@@ -48,13 +48,13 @@ class TestUtils(unittest.TestCase):
     def test_spliting_text_nodes_multiple(self):
         node = TextNode("This is text with a `code block` word and another `code block`", TextType.TEXT)
 
-        new_nodes = split_nodes_delimiter([node], "`", TextType.Code)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
 
         expected_result = [
             TextNode("This is text with a ", TextType.TEXT),
-            TextNode("code block", TextType.Code),
+            TextNode("code block", TextType.CODE),
             TextNode(" word and another ", TextType.TEXT),
-            TextNode("code block", TextType.Code),
+            TextNode("code block", TextType.CODE),
         ]
 
         self.assertEqual(new_nodes, expected_result)
@@ -63,15 +63,15 @@ class TestUtils(unittest.TestCase):
         node1 = TextNode("This is text with a `code block` word and another `code block`", TextType.TEXT)
         node2 = TextNode("This is text with a `code block` word", TextType.TEXT)
 
-        new_nodes = split_nodes_delimiter([node1, node2], "`", TextType.Code)
+        new_nodes = split_nodes_delimiter([node1, node2], "`", TextType.CODE)
 
         expected_result = [
             TextNode("This is text with a ", TextType.TEXT),
-            TextNode("code block", TextType.Code),
+            TextNode("code block", TextType.CODE),
             TextNode(" word and another ", TextType.TEXT),
-            TextNode("code block", TextType.Code),
+            TextNode("code block", TextType.CODE),
             TextNode("This is text with a ", TextType.TEXT),
-            TextNode("code block", TextType.Code),
+            TextNode("code block", TextType.CODE),
             TextNode(" word", TextType.TEXT),
         ]
 
@@ -112,10 +112,10 @@ class TestUtils(unittest.TestCase):
         self.assertListEqual(
             [
                 TextNode("This is text with an ", TextType.TEXT),
-                TextNode("image", TextType.Images, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
                 TextNode(" and another ", TextType.TEXT),
                 TextNode(
-                    "second image", TextType.Images, "https://i.imgur.com/3elNhQu.png"
+                    "second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"
                 ),
             ],
             new_nodes,
