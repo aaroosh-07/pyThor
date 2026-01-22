@@ -82,7 +82,12 @@ def split_nodes_image(old_nodes: list) -> list:
     # or use extract markdown images function call
 
     new_nodes = []
+
     for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        
         textSections = re.split(r"(!\[[^\[\]]*\]\([^\(\)]*\))", old_node.text)
 
         for section in textSections:
@@ -107,6 +112,10 @@ def split_nodes_link(old_nodes):
     new_nodes = []
 
     for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        
         textSections = re.split(r"((?<!!)\[[^\[\]]*\]\([^\(\)]*\))", old_node.text)
 
         for sections in textSections:
@@ -128,3 +137,22 @@ def split_nodes_link(old_nodes):
     
     return new_nodes
 
+
+def text_to_textnodes(text: str) -> list:
+    # take text and split it down into different TextType nodes
+
+    node = TextNode(text, TextType.TEXT)
+
+    #first check for italic, Code and bold
+    new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+
+    new_nodes = split_nodes_delimiter(new_nodes, "**", TextType.BOLD)
+
+    new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+    #then check for images
+    new_nodes = split_nodes_image(new_nodes)
+
+    #then for Links
+    new_nodes = split_nodes_link(new_nodes)
+
+    return new_nodes
