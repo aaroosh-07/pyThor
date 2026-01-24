@@ -28,13 +28,13 @@ def check_code_block_type(block: str) -> bool:
     
     slicedStr = block[:4]
 
-    if slicedStr != "```\n"
+    if slicedStr != "```\n":
         return False
     
     # Now check the ending 3 characters
     slicedStrEnd = block[-3:]
 
-    if slicedStrEnd != "```"
+    if slicedStrEnd != "```":
         return False
 
     return True
