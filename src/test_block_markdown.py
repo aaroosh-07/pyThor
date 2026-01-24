@@ -24,10 +24,40 @@ This is the same paragraph on a new line
         )
 
     def test_block_to_block_type(self):
+        # only basic funtionality has been tested in these tests
+        # need to add more test for edge cases
+
         self.assertEqual(block_to_block_type("# this is a heading"), BlockType.HEADING)
         self.assertEqual(block_to_block_type("## this is a heading"), BlockType.HEADING)
         self.assertEqual(block_to_block_type("#### this is a heading"), BlockType.HEADING)
         self.assertEqual(block_to_block_type("####### this is a heading"), BlockType.PARAGRAPH)
+
+        unorderedListMd = """
+- This is first list item.
+- This is second list item.
+- this is third list item.
+"""
+        self.assertEqual(block_to_block_type(unorderedListMd), BlockType.UNORDERED_LIST)
+
+        orderedListMd = """
+1. This is first item.
+2. this is second item.
+3. this is third item.
+"""
+        self.assertEqual(block_to_block_type(orderedListMd), BlockType.ORDERED_LIST)
+
+        codeMd = """
+```
+#include<iostream.h>
+```
+"""
+        self.assertEqual(block_to_block_type(codeMd), BlockType.CODE)
+
+        qouteMd = """
+> This should be displayed in quotes
+> this next line also.
+"""
+        self.assertEqual(block_to_block_type(qouteMd), BlockType.QUOTE)
 
 if __name__ == "__main__":
     unittest.main()

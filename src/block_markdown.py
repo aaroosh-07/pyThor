@@ -23,7 +23,11 @@ def check_heading_block_type(block: str) -> bool:
     return False
 
 def check_code_block_type(block: str) -> bool:
-    if len(block) < 4:
+    # remove any whitespaces if present
+    # doing this for testcase strings
+    block = block.strip()
+
+    if len(block) < 5:
         return False
     
     slicedStr = block[:4]
@@ -49,6 +53,9 @@ def check_quote_block_type(block: str) -> bool:
     lines = block.split("\n")
 
     for line in lines:
+        if len(line) == 0:
+            continue
+        
         whitespacesRemovedLine = line.lstrip()
         specialChars = whitespacesRemovedLine[:2]
 
@@ -62,10 +69,12 @@ def check_unordered_list_block_type(block: str) -> bool:
 
     # currently we do not support indentation inside unordered list
     # this can be taken up in the future
-
     lines = block.split("\n")
 
     for line in lines:
+        if len(line) == 0:
+            continue
+
         lineAfterWhitespaceRemoval = line.lstrip()
 
         specialChars = lineAfterWhitespaceRemoval[:2]
@@ -81,9 +90,12 @@ def check_ordered_list_block_type(block: str) -> bool:
     lines = block.split("\n")
 
     for line in lines:
+        if len(line) == 0:
+            continue
+        
         lineAfterWhitespaceRemoval = line.lstrip()
 
-        isDigit: bool = lineAfterWhitespaceRemoval[0].isDigit()
+        isDigit: bool = lineAfterWhitespaceRemoval[0].isdigit()
 
         specialChars = lineAfterWhitespaceRemoval[1:3]
 
@@ -105,6 +117,9 @@ def block_to_block_type(block: str) -> BlockType:
 
     if check_unordered_list_block_type(block):
         return BlockType.UNORDERED_LIST
+
+    if check_ordered_list_block_type(block):
+        return BlockType.ORDERED_LIST
     
     return BlockType.PARAGRAPH
 
