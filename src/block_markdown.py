@@ -1,4 +1,6 @@
 from enum import Enum
+from utils import text_to_textnodes, text_node_to_html_node
+from parentnode import ParentNode
 
 class BlockType(Enum):
     PARAGRAPH: str = "Paragraph"
@@ -139,3 +141,46 @@ def markdown_to_blocks(markdown: str) -> list[str]:
         blocks.append(blockString.strip())
 
     return blocks
+
+def heading_block_to_html_node(block: str) -> HTMLNode:
+    #find the type of heading
+    index = 0
+    countPoundSign = 0
+    foundPoundSign = False
+
+    while block[index] == '#':
+        index += 1
+        countPoundSign += 1
+
+    tag :str = f"h{countPoundSign}"
+
+    #create LeafNodes of heading
+    text = block[index + 1:]
+
+    textNodes = text_to_textnodes(text)
+
+    childHtmlNodes = []
+    for textNode in textNodes:
+        childHtmlNodes.append(text_node_to_html_node(textNode))
+
+    #create Parent Node for heading tag
+    headingHtmlNode = ParentNode(tag = tag, children = childHtmlNodes)
+
+    return headingHtmlNode
+    
+
+def markdown_to_html(markdown: str) -> HTMLNode:
+
+    #split markdown into separate blocks
+    blocks = markdown_to_blocks(markdown)
+
+    generatedHtmlNodes = []
+    for block in blocks:
+        blockType = block_to_block_type(block)
+
+        match block:
+            case BlockType.HEADING:
+                #call function associated with heading
+                generatedHtmlNodes.append(heading_block_to_html_node(block))
+            case _:
+                raise Exception("Processing Error: Invalid BlockType")
