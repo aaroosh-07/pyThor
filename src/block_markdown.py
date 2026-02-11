@@ -168,6 +168,20 @@ def heading_block_to_html_node(block: str) -> HTMLNode:
     headingHtmlNode = ParentNode(tag = tag, children = childHtmlNodes)
 
     return headingHtmlNode
+
+def paragraph_block_to_html_node(block: str) -> HTMLNode:
+    # the paragraph may contain italics and bolds
+
+    textNodes = text_to_textnodes(block)
+
+    childHtmlNodes = []
+
+    for textNode in textNodes:
+        childHtmlNodes.append(text_node_to_html_node(textNode))
+
+    paragraphHtmlNode = ParentNode(tag="p", children=childHtmlNodes)
+
+    return paragraphHtmlNode
     
 
 def markdown_to_html(markdown: str) -> HTMLNode:
@@ -183,6 +197,8 @@ def markdown_to_html(markdown: str) -> HTMLNode:
             case BlockType.HEADING:
                 #call function associated with heading
                 generatedHtmlNodes.append(heading_block_to_html_node(block))
+            case BlockType.PARAGRAPH:
+                generatedHtmlNodes.append(paragraph_block_to_html_node(block))
             case _:
                 raise Exception("Processing Error: Invalid BlockType")
             
