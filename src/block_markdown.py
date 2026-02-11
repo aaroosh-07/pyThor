@@ -1,6 +1,7 @@
 from enum import Enum
 from utils import text_to_textnodes, text_node_to_html_node
 from parentnode import ParentNode
+from htmlnode import HTMLNode
 
 class BlockType(Enum):
     PARAGRAPH: str = "Paragraph"
@@ -178,9 +179,14 @@ def markdown_to_html(markdown: str) -> HTMLNode:
     for block in blocks:
         blockType = block_to_block_type(block)
 
-        match block:
+        match blockType:
             case BlockType.HEADING:
                 #call function associated with heading
                 generatedHtmlNodes.append(heading_block_to_html_node(block))
             case _:
                 raise Exception("Processing Error: Invalid BlockType")
+            
+    
+    parentHtmlNode = ParentNode(tag="div", children=generatedHtmlNodes)
+
+    return parentHtmlNode
