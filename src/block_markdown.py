@@ -2,6 +2,7 @@ from enum import Enum
 from utils import text_to_textnodes, text_node_to_html_node
 from parentnode import ParentNode
 from htmlnode import HTMLNode
+from leafnode import LeafNode
 
 class BlockType(Enum):
     PARAGRAPH: str = "Paragraph"
@@ -182,6 +183,25 @@ def paragraph_block_to_html_node(block: str) -> HTMLNode:
     paragraphHtmlNode = ParentNode(tag="p", children=childHtmlNodes)
 
     return paragraphHtmlNode
+
+def unordered_list_block_to_html_node(block: str) -> HTMLNode:
+
+    lines = block.split("\n")
+
+    childrenNodes = []
+
+    for line in lines:
+        if len(line) == 0:
+            continue
+
+        lineWithoutWhitespace = line.strip()
+        text = lineWithoutWhitespace[2:]
+        childNode = LeafNode(tag="li", value=text)
+        childrenNodes.append(childNode)
+
+    parentNode = ParentNode(tag="ul", children=childrenNodes)
+
+    return parentNode
     
 
 def markdown_to_html(markdown: str) -> HTMLNode:
@@ -199,6 +219,8 @@ def markdown_to_html(markdown: str) -> HTMLNode:
                 generatedHtmlNodes.append(heading_block_to_html_node(block))
             case BlockType.PARAGRAPH:
                 generatedHtmlNodes.append(paragraph_block_to_html_node(block))
+            case BlockType.UNORDERED_LIST:
+                generatedHtmlNodes.append(unordered_list_block_to_html_node(block))
             case _:
                 raise Exception("Processing Error: Invalid BlockType")
             
